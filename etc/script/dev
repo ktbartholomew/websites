@@ -1,0 +1,22 @@
+#!/bin/bash
+
+ROOT=$(cd $(dirname $0)/..; pwd)
+source ${ROOT}/env
+
+docker run \
+-d \
+-e MYSQL_HOST=${MYSQL_HOST} \
+-e MYSQL_USER=${MYSQL_USER} \
+-e MYSQL_PASS=${MYSQL_PASS} \
+-e MYSQL_DB=${MYSQL_DB} \
+-e CRAFT_DEVMODE=${CRAFT_DEVMODE} \
+-e CRAFT_BASEPATH=${CRAFT_BASEPATH} \
+-e CRAFT_BASEURL=${CRAFT_BASEURL} \
+--name=the-bartholomews \
+-P \
+--restart=always \
+-v ${ROOT}/src/html:/var/www/html \
+-v ${ROOT}/src/craft/templates:/var/www/craft/templates \
+the-bartholomews
+
+echo "Container running at http://"$(docker port the-bartholomews 80)

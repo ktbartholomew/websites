@@ -1,0 +1,4 @@
+src/.git
+src/node_modules
+src/craft/storage/backups
+src/craft/storage/runtime

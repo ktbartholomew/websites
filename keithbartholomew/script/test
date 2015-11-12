@@ -1,0 +1,8 @@
+#!/bin/bash
+
+get_arg(argname) {
+  for arg in ${@}; do
+    
+    echo ${arg};
+  done;
+}

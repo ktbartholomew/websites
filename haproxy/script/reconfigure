@@ -1,0 +1,11 @@
+#!/bin/bash
+
+root=$(cd $(dirname $0)/..; pwd)
+
+${root}/script/build
+
+docker cp ${root}/haproxy.cfg haproxy:/usr/local/etc/haproxy/haproxy.cfg
+
+docker exec \
+haproxy \
+/bin/bash -c 'haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg && haproxy -D -f /usr/local/etc/haproxy/haproxy.cfg -p /var/run/haproxy.pid -sf $(cat /var/run/haproxy.pid)'

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [ -z ${2} ]; then
+  echo "Usage: script/run <scale=1> <color>"
+  exit 1
+fi
+
+docker ps -q -f name=the-bartholomews_${2} | xargs docker rm -fv
+
+for i in $(seq 1 ${1:-1}); do
+  docker run \
+  -d \
+  -e MYSQL_HOST=${BARTHOLOMEWS_MYSQL_HOST} \
+  -e MYSQL_USER=${BARTHOLOMEWS_MYSQL_USER} \
+  -e MYSQL_PASS=${BARTHOLOMEWS_MYSQL_PASS} \
+  -e MYSQL_DB=${BARTHOLOMEWS_MYSQL_DB} \
+  -e CRAFT_DEVMODE=${BARTHOLOMEWS_CRAFT_DEVMODE} \
+  -e CRAFT_BASEPATH=${BARTHOLOMEWS_CRAFT_BASEPATH} \
+  -e CRAFT_BASEURL=${BARTHOLOMEWS_CRAFT_BASEURL} \
+  --label color=${2} \
+  --link the-bartholomews-redis:redis \
+  --name=the-bartholomews_${2}_${i} \
+  -P \
+  --restart=always \
+  the-bartholomews
+done;
+
+for i in $(seq 1 ${1:-1}); do
+  echo "Container running at http://"$(docker port the-bartholomews_${2}_${i} 80)
+done;

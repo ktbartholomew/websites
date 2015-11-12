@@ -1,0 +1,16 @@
+#!/bin/bash
+
+root=$(cd $(dirname $0)/..; pwd)
+
+${root}/script/build
+
+docker rm -fv haproxy
+
+docker run \
+-d \
+--name haproxy \
+--restart=always \
+-e STATS_PASS=${HAPROXY_STATS_PASS} \
+-p 80:80 \
+-p 9000:9000 \
+haproxy
