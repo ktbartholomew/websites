@@ -1,25 +1,22 @@
 #!/bin/bash
 
-ROOT=$(cd $(dirname $0)/..; pwd)
-source ${ROOT}/env
-
 if [ -z ${2} ]; then
   echo "Usage: script/run <scale=1> <color>"
   exit 1
 fi
 
-docker ps -q -f name=etc-keithbartholomew_${2} | xargs docker rm -fv
+docker ps -q -f name=etc_${2} | xargs docker rm -fv
 
 for i in $(seq 1 ${1:-1}); do
   docker run \
   -d \
   --label color=${2} \
-  --name=etc-keithbartholomew_${2}_${i} \
+  --name=etc_${2}_${i} \
   -P \
   --restart=always \
-  etc-keithbartholomew
+  etc
 done;
 
 for i in $(seq 1 ${1:-1}); do
-  echo "Container running at http://"$(docker port etc-keithbartholomew_${2}_${i} 80)
+  echo "Container running at http://"$(docker port etc_${2}_${i} 80)
 done;

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# ROOT=$(cd $(dirname $0)/..; pwd)
+# source ${ROOT}/env
+
+if [ -z ${2} ]; then
+  echo "Usage: script/run <scale=1> <color>"
+  exit 1
+fi
+
+docker ps -q -f name=santa_${2} | xargs docker rm -fv
+
+for i in $(seq 1 ${1:-1}); do
+  docker run \
+  -d \
+  --label color=${2} \
+  --name=santa_${2}_${i} \
+  -e MONGO_HOST=${SANTA_MONGO_HOST} \
+  -e MONGO_PORT=${SANTA_MONGO_PORT} \
+  -e MONGO_USER=${SANTA_MONGO_USER} \
+  -e MONGO_PASS=${SANTA_MONGO_PASS} \
+  -e MONGO_DB=${SANTA_MONGO_DB} \
+  -e FACEBOOK_APP_ID=${SANTA_FACEBOOK_APP_ID} \
+  -P \
+  --restart=always \
+  santa
+done;
+
+
+for i in $(seq 1 ${1:-1}); do
+  echo "Container running at http://"$(docker port santa_${2}_${i} 3000)
+done;

@@ -2,12 +2,13 @@
 
 backend=${1}
 color=${2:-"blue"}
+port=${3:-"80"}
 
 touch .haproxyservers
 
 export CONTAINERS=$(docker ps -q -f name=${backend}_${color}_)
 for container in ${CONTAINERS}; do
-  echo "server ${container}-${color} $(docker port ${container} 80) check inter 2s" >> .haproxyservers
+  echo "server ${container}-${color} $(docker port ${container} ${port}) check inter 2s" >> .haproxyservers
 done;
 
 export SERVERS=$(cat .haproxyservers)
